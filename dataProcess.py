@@ -58,6 +58,6 @@ def visionPointCloudPcd(path):
     visionPointCloud(exp)
 
 
-mypath = "dataSet1/1615479189.txt"
-print(storeDataToPcd(storeDataToNumpy(mypath)))
+# mypath = "dataSet1/1615479189.txt"
+# print(storeDataToPcd(storeDataToNumpy(mypath)))
 # visionPointCloudPcd(mypath)
