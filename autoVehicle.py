@@ -10,7 +10,7 @@ from vehicle import Car
 from config import cfg
 
 
-basePath = cfg.param.defaultPath
+basePath = cfg.param.basePath
 
 
 def savePointCloudTxt(gpsInfo, pointCloud, filename):

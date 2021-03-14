@@ -11,7 +11,7 @@ cfg = __C
 
 __C.param = edict()
 __C.param.savePeriod = 20
-__C.param.defaultPath = "dataSet1/"
+__C.param.basePath = "dataSet1/"
 __C.param.sample = False
 
 __C.robot = edict()

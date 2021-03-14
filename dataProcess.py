@@ -6,6 +6,8 @@
 
 import open3d as o3d
 import numpy as np
+import glob
+from config import cfg
 
 
 def storeDataToNumpy(path, render=True):
@@ -28,7 +30,7 @@ def storeDataToNumpy(path, render=True):
     savePath = path[0:7]+"Npy"+path[7:-4]+".npy"
     np.save(savePath, data_numpy)
     print(data_numpy.shape)
-    print("Successfully Saved!")
+    print("Numpy Successfully Saved!")
     return savePath
 
 
@@ -39,7 +41,7 @@ def storeDataToPcd(path):
     exp.points = o3d.utility.Vector3dVector(data_numpy)
     savePath = path[0:7]+"Pcd"+path[10:-4]+".pcd"
     o3d.io.write_point_cloud(savePath, exp)
-    print("Successfully Saved!")
+    print("Pcd Successfully Saved!")
     return savePath
 
 
@@ -58,6 +60,22 @@ def visionPointCloudPcd(path):
     visionPointCloud(exp)
 
 
-# mypath = "dataSet1/1615479189.txt"
+def getFilePathList(basePath):
+    seq_list = sorted(glob.glob(basePath + "/*"))
+    print(seq_list)
+    return seq_list
+
+
+def pathToNpyPath(basePath):
+    return basePath[:-2] + "Npy" + basePath[-2] + "/"
+
+
+def pathToPcdPath(basePath):
+    return basePath[:-2] + "Pcd" + basePath[-2] + "/"
+
+
+# base = cfg.param.basePath
+# path = pathToPcdPath(base)
+# getFilePathList(path)
 # print(storeDataToPcd(storeDataToNumpy(mypath)))
 # visionPointCloudPcd(mypath)
