@@ -1,0 +1,35 @@
+# -*- coding:utf-8 -*-
+"""
+作者：34995
+日期：2021年03月11日
+"""
+
+from easydict import EasyDict as edict
+
+__C = edict()
+cfg = __C
+
+__C.param = edict()
+__C.param.savePeriod = 20
+__C.param.defaultPath = "dataSet1/"
+__C.param.sample = False
+
+__C.robot = edict()
+__C.robot.time = 50.0
+
+__C.lidar = edict()
+__C.lidar.isEnable = False
+__C.lidar.samplingPeriod = 50
+__C.lidar.frequency = 5.0
+
+__C.gps = edict()
+__C.gps.isEnable = False
+__C.gps.samplingPeriod = 50
+
+__C.camera = edict()
+__C.camera.isEnable = True
+__C.camera.samplingPeriod = 50
+
+__C.sick = edict()
+__C.sick.isEnable = False
+__C.sick.samplingPeriod = 50
