@@ -31,5 +31,11 @@ __C.camera.isEnable = True
 __C.camera.samplingPeriod = 50
 
 __C.sick = edict()
-__C.sick.isEnable = False
+__C.sick.isEnable = True
 __C.sick.samplingPeriod = 50
+
+__C.pid = edict()
+__C.pid.isEnable = True
+__C.pid.KP = 0.25
+__C.pid.KI = 0.006
+__C.pid.KD = 2

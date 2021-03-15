@@ -10,11 +10,12 @@ from vehicle import Car
 from config import cfg
 
 
+unKnown = 9999
 basePath = cfg.param.basePath
 
 
 def savePointCloudTxt(gpsInfo, pointCloud, filename):
-    fw = open(filename, 'w')
+    fw = open(filename + str(int(time.time())) + ".txt", 'w')
     fw.write(str(gpsInfo))
     fw.write("\n")
     for i in range(len(pointCloud)):
@@ -59,7 +60,6 @@ class OnHandVehicle(Car):
                 self.setCruisingSpeed(self.speed)
             elif key == ord('B'):
                 B = self.lidar.getPointCloud(data_type='list')
-                tmp = []
                 print('B is pressed')
                 print(len(B))
 
@@ -70,7 +70,7 @@ class AutoVehicle(Car):
         self.cameraChannel = 3
         self.controlTime = cfg.robot.time
         self.basicTime = self.getBasicTimeStep()
-        print("#"*40)
+        print("#" * 40)
         print("This is auto-Vehicle!")
         print("Here are my Info: ")
         print("My Synchronization: ", self.getSynchronization())
@@ -99,6 +99,9 @@ class AutoVehicle(Car):
 
         print("Camera Enabled: ", cfg.camera.isEnable)
         if cfg.camera.isEnable:
+            self.firstCall = True
+            self.filterSize = 3
+            self.oldCameraValue = [0, 0, 0]
             self.camera = self.getDevice("camera")
             self.camera.enable(cfg.camera.samplingPeriod)
             self.cameraImgWidth = self.camera.getWidth()
@@ -111,9 +114,23 @@ class AutoVehicle(Car):
 
         print("Sick Enabled: ", cfg.sick.isEnable)
         if cfg.sick.isEnable:
+            self.halfArea = 20
             self.sick = self.getDevice("Sick LMS 291")
             self.sick.enable(cfg.sick.samplingPeriod)
+            self.sickWidth = self.sick.getHorizonResolution()
+            self.sickRange = self.sick.getMaxRange()
+            self.sickFov = self.sick.getFov()
             print("Sampling Period: ", self.sick.getSamplingPeriod())
+            print("Sick Width: ", self.sickWidth)
+            print("Sick Range: ", self.sickRange)
+            print("Sick Fov: ", self.sickFov)
+        print("#" * 40)
+
+        print("PID Enabled: ", cfg.pid.isEnable)
+        if cfg.pid.isEnable:
+            self.needResetPID = False
+            self.oldPIDValue = 0.0
+            self.integral = 0.0
         print("#" * 40)
 
         self.setHazardFlashers(True)
@@ -121,6 +138,10 @@ class AutoVehicle(Car):
         self.setAntifogLights(True)
         self.setWiperMode(False)
         self.setCruisingSpeed(10)
+
+    def processSickInfo(self, sickInfo, obstacleDist):
+        sumX = 0
+        collisionCount = 0
 
     def colorDiff(self, color1, color2):
         diff = 0
@@ -141,8 +162,36 @@ class AutoVehicle(Car):
 
         print(yellowPixels)
         if yellowPixels == 0:
-            return 9999
+            return unKnown
         return (xDiffSum / yellowPixels / self.cameraImgWidth - 0.5) * self.cameraImgFov
+
+    def filterAngle(self, newValue):
+        if self.firstCall or newValue == unKnown:
+            self.firstCall = False
+        else:
+            for i in range(self.filterSize - 1):
+                self.oldCameraValue[i] = self.oldCameraValue[i + 1]
+        if newValue == unKnown:
+            return unKnown
+        else:
+            self.oldCameraValue[self.filterSize - 1] = newValue
+            filterSum = 0.0
+            for i in range(self.filterSize):
+                filterSum += self.oldCameraValue[i]
+            return filterSum / self.filterSize
+
+    def applyPID(self, yellowLineAngle):
+        if self.needResetPID:
+            self.oldPIDValue = yellowLineAngle
+            self.integral = 0
+            self.needResetPID = False
+        if self.oldPIDValue * yellowLineAngle < 0:
+            self.integral = 0
+        if abs(self.integral) < 30:
+            self.integral += yellowLineAngle
+        diff = yellowLineAngle - self.oldPIDValue
+        self.oldPIDValue = yellowLineAngle
+        return cfg.pid.KP * yellowLineAngle + cfg.pid.KI * self.integral + cfg.pid.KD * diff
 
     def run(self):
         i = 1
@@ -150,18 +199,18 @@ class AutoVehicle(Car):
             self.setCruisingSpeed(10)
             if i % int(self.controlTime / self.basicTime) == 0:
                 if cfg.camera.isEnable:
-                    camera_data = self.camera.getImageArray()
-                    self.processCameraImage(camera_data)
+                    cameraData = self.camera.getImageArray()
+                    yellowLineAngle = self.filterAngle(self.processCameraImage(cameraData))
                 if cfg.sick.isEnable:
-                    sick_data = self.sick.getRangeImage()
+                    sickData = self.sick.getRangeImage()
 
-            if i % (cfg.param.savePeriod * int(self.controlTime / self.basicTime)) == 0 and cfg.param.sample == 1:
-                if cfg.gps.isEnable == 1 and cfg.lidar.isEnable == 1:
-                    path = basePath + str(int(time.time())) + ".txt"
-                    gpsInfo = self.gps.getValues()
-                    lidarInfo = self.lidar.getPointCloud(data_type='list')
-                    # savePointCloudTxt(gpsInfo, lidarInfo, path)
-            i += 1
+            # if i % (cfg.param.savePeriod * int(self.controlTime / self.basicTime)) == 0 and cfg.param.sample == 1:
+            #     if cfg.gps.isEnable == 1 and cfg.lidar.isEnable == 1:
+            #         path = basePath
+            #         gpsInfo = self.gps.getValues()
+            #         lidarInfo = self.lidar.getPointCloud(data_type='list')
+            #         # savePointCloudTxt(gpsInfo, lidarInfo, path)
+            # i += 1
 
 
 BmwX5 = AutoVehicle()
