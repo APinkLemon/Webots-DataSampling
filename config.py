@@ -13,12 +13,13 @@ __C.param = edict()
 __C.param.savePeriod = 20
 __C.param.basePath = "dataSet1/"
 __C.param.sample = False
+__C.param.velocity = 50
 
 __C.robot = edict()
 __C.robot.time = 50.0
 
 __C.lidar = edict()
-__C.lidar.isEnable = False
+__C.lidar.isEnable = True
 __C.lidar.samplingPeriod = 50
 __C.lidar.frequency = 5.0
 

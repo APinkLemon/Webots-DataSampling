@@ -67,7 +67,8 @@ class OnHandVehicle(Car):
 class AutoVehicle(Car):
     def __init__(self):
         Car.__init__(self)
-        self.cameraChannel = 3
+        self.steeringAngle = 0.0
+        self.velocity = cfg.param.velocity
         self.controlTime = cfg.robot.time
         self.basicTime = self.getBasicTimeStep()
         print("#" * 40)
@@ -101,6 +102,7 @@ class AutoVehicle(Car):
         if cfg.camera.isEnable:
             self.firstCall = True
             self.filterSize = 3
+            self.cameraChannel = 3
             self.oldCameraValue = [0, 0, 0]
             self.camera = self.getDevice("camera")
             self.camera.enable(cfg.camera.samplingPeriod)
@@ -114,10 +116,10 @@ class AutoVehicle(Car):
 
         print("Sick Enabled: ", cfg.sick.isEnable)
         if cfg.sick.isEnable:
-            self.halfArea = 20
+            self.HALFAREA = 20
             self.sick = self.getDevice("Sick LMS 291")
             self.sick.enable(cfg.sick.samplingPeriod)
-            self.sickWidth = self.sick.getHorizonResolution()
+            self.sickWidth = self.sick.getHorizontalResolution()
             self.sickRange = self.sick.getMaxRange()
             self.sickFov = self.sick.getFov()
             print("Sampling Period: ", self.sick.getSamplingPeriod())
@@ -131,17 +133,33 @@ class AutoVehicle(Car):
             self.needResetPID = False
             self.oldPIDValue = 0.0
             self.integral = 0.0
+            print("KP: ", cfg.pid.KP)
+            print("KI: ", cfg.pid.KI)
+            print("KD: ", cfg.pid.KD)
         print("#" * 40)
 
         self.setHazardFlashers(True)
         self.setDippedBeams(True)
         self.setAntifogLights(True)
         self.setWiperMode(False)
-        self.setCruisingSpeed(10)
+        self.setCruisingSpeed(self.velocity)
 
-    def processSickInfo(self, sickInfo, obstacleDist):
+    def processSickInfo(self, sickInfo):
         sumX = 0
+        obstacleDist = 0
         collisionCount = 0
+        for i in range(self.HALFAREA * 2):
+            key = int(i + self.sickWidth / 2 - self.HALFAREA)
+            tmp = sickInfo[key]
+            if tmp < 20.0:
+                sumX += key
+                collisionCount += 1
+                obstacleDist += tmp
+        if collisionCount == 0:
+            return unKnown, obstacleDist
+        obstacleDist = obstacleDist / collisionCount
+        obstacleAngle = (sumX / collisionCount / self.sickWidth - 0.5) * self.sickFov
+        return obstacleAngle, obstacleDist
 
     def colorDiff(self, color1, color2):
         diff = 0
@@ -160,7 +178,6 @@ class AutoVehicle(Car):
                     xDiffSum += i % self.cameraImgWidth
                     yellowPixels += 1
 
-        print(yellowPixels)
         if yellowPixels == 0:
             return unKnown
         return (xDiffSum / yellowPixels / self.cameraImgWidth - 0.5) * self.cameraImgFov
@@ -196,21 +213,44 @@ class AutoVehicle(Car):
     def run(self):
         i = 1
         while self.step() != -1:
-            self.setCruisingSpeed(10)
             if i % int(self.controlTime / self.basicTime) == 0:
                 if cfg.camera.isEnable:
                     cameraData = self.camera.getImageArray()
                     yellowLineAngle = self.filterAngle(self.processCameraImage(cameraData))
-                if cfg.sick.isEnable:
-                    sickData = self.sick.getRangeImage()
+                    if cfg.sick.isEnable:
+                        sickData = self.sick.getRangeImage()
+                        obstacleAngle, obstacleDist = self.processSickInfo(sickData)
+                        if obstacleAngle != unKnown:
+                            self.setBrakeIntensity(0.0)
+                            obstacleSteering = self.steeringAngle
+                            if 0.0 < obstacleAngle < 0.4:
+                                obstacleSteering = self.steeringAngle + (obstacleAngle - 0.25) / obstacleDist
+                            elif obstacleAngle > -0.4:
+                                obstacleSteering = self.steeringAngle + (obstacleAngle + 0.25) / obstacleDist
+                            steer = self.steeringAngle
+                            if yellowLineAngle != unKnown:
+                                lineFollowingSteering = self.applyPID(yellowLineAngle)
+                                if obstacleSteering > 0 and lineFollowingSteering > 0:
+                                    steer = max(obstacleSteering, lineFollowingSteering)
+                                elif obstacleSteering < 0 and lineFollowingSteering < 0:
+                                    steer = min(obstacleSteering, lineFollowingSteering)
+                            else:
+                                self.needResetPID = True
+                            self.setSteeringAngle(steer)
+                        elif yellowLineAngle != unKnown:
+                            self.setBrakeIntensity(0.0)
+                            self.setSteeringAngle(self.applyPID(yellowLineAngle))
+                        else:
+                            self.setBrakeIntensity(0.4)
+                            self.needResetPID = True
+            i += 1
 
-            # if i % (cfg.param.savePeriod * int(self.controlTime / self.basicTime)) == 0 and cfg.param.sample == 1:
-            #     if cfg.gps.isEnable == 1 and cfg.lidar.isEnable == 1:
-            #         path = basePath
-            #         gpsInfo = self.gps.getValues()
-            #         lidarInfo = self.lidar.getPointCloud(data_type='list')
-            #         # savePointCloudTxt(gpsInfo, lidarInfo, path)
-            # i += 1
+            if i % (cfg.param.savePeriod * int(self.controlTime / self.basicTime)) == 0 and cfg.param.sample == 1:
+                if cfg.gps.isEnable == 1 and cfg.lidar.isEnable == 1:
+                    path = basePath
+                    gpsInfo = self.gps.getValues()
+                    lidarInfo = self.lidar.getPointCloud(data_type='list')
+                    savePointCloudTxt(gpsInfo, lidarInfo, path)
 
 
 BmwX5 = AutoVehicle()
