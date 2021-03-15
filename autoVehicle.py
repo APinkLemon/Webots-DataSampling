@@ -160,7 +160,7 @@ class AutoVehicle(Car):
                     path = basePath + str(int(time.time())) + ".txt"
                     gpsInfo = self.gps.getValues()
                     lidarInfo = self.lidar.getPointCloud(data_type='list')
-                    # savePointCloudTxt(gpsInfo, lidarInfo, path)
+                    savePointCloudTxt(gpsInfo, lidarInfo, path)
             i += 1
 
 
