@@ -7,6 +7,8 @@
 import open3d as o3d
 import numpy as np
 import glob
+import os
+import time
 from config import cfg
 
 
@@ -27,10 +29,13 @@ def storeDataToNumpy(path, render=True):
         data.append(single_data)
 
     data_numpy = np.array(data)
-    savePath = path[0:7]+"Npy"+path[7:-4]+".npy"
+    savePath = pathToNpyPath(path)
+    if os.path.exists(savePath):
+        print(path + " Exists!")
+        return savePath
     np.save(savePath, data_numpy)
     print(data_numpy.shape)
-    print("Numpy Successfully Saved!")
+    print("Numpy " + savePath + " Successfully Saved!")
     return savePath
 
 
@@ -39,9 +44,12 @@ def storeDataToPcd(path):
     print(data_numpy.shape)
     exp = o3d.geometry.PointCloud()
     exp.points = o3d.utility.Vector3dVector(data_numpy)
-    savePath = path[0:7]+"Pcd"+path[10:-4]+".pcd"
+    savePath = pathToPcdPath(path)
+    if os.path.exists(savePath):
+        print(path + " Exists!")
+        return savePath
     o3d.io.write_point_cloud(savePath, exp)
-    print("Pcd Successfully Saved!")
+    print("Pcd " + savePath + " Successfully Saved!")
     return savePath
 
 
@@ -66,15 +74,31 @@ def getFilePathList(basePath):
     return seq_list
 
 
-def pathToNpyPath(basePath):
+def pathToBaseNpyPath(basePath):
     return basePath[:-2] + "Npy" + basePath[-2] + "/"
 
 
-def pathToPcdPath(basePath):
+def pathToBasePcdPath(basePath):
     return basePath[:-2] + "Pcd" + basePath[-2] + "/"
 
 
-# base = cfg.param.basePath
+def pathToNpyPath(path):
+    return path.replace("Set", "SetNpy").replace(".txt", ".npy")
+
+
+def pathToPcdPath(path):
+    if "SetNpy" in path:
+        return path.replace("SetNpy", "SetPcd").replace(".npy", ".pcd")
+    elif "Set" in path:
+        return path.replace("Set", "SetPcd").replace(".txt", ".pcd")
+    else:
+        return 9999
+
+
+base = cfg.param.basePath
+fileList = getFilePathList(pathToBasePcdPath(base))
+visionPointCloudPcd(fileList[25])
+
 # path = pathToPcdPath(base)
 # getFilePathList(path)
 # print(storeDataToPcd(storeDataToNumpy(mypath)))

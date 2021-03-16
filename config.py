@@ -10,9 +10,9 @@ __C = edict()
 cfg = __C
 
 __C.param = edict()
-__C.param.savePeriod = 20
+__C.param.savePeriod = 50
 __C.param.basePath = "dataSet1/"
-__C.param.sample = False
+__C.param.sample = True
 __C.param.velocity = 50
 
 __C.robot = edict()
@@ -24,7 +24,7 @@ __C.lidar.samplingPeriod = 50
 __C.lidar.frequency = 5.0
 
 __C.gps = edict()
-__C.gps.isEnable = False
+__C.gps.isEnable = True
 __C.gps.samplingPeriod = 50
 
 __C.camera = edict()

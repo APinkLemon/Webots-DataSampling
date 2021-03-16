@@ -11,11 +11,11 @@ from config import cfg
 
 
 unKnown = 9999
-basePath = cfg.param.basePath
 
 
-def savePointCloudTxt(gpsInfo, pointCloud, filename):
-    fw = open(filename + str(int(time.time())) + ".txt", 'w')
+def savePointCloudTxt(gpsInfo, pointCloud, basePath=cfg.param.basePath):
+    filename = basePath + str(int(time.time())) + ".txt"
+    fw = open(filename, 'w')
     fw.write(str(gpsInfo))
     fw.write("\n")
     for i in range(len(pointCloud)):
@@ -243,14 +243,14 @@ class AutoVehicle(Car):
                         else:
                             self.setBrakeIntensity(0.4)
                             self.needResetPID = True
-            i += 1
 
-            if i % (cfg.param.savePeriod * int(self.controlTime / self.basicTime)) == 0 and cfg.param.sample == 1:
+            if i % (cfg.param.savePeriod * int(self.controlTime / self.basicTime)) == 0 and cfg.param.sample:
                 if cfg.gps.isEnable == 1 and cfg.lidar.isEnable == 1:
-                    path = basePath
+                    path = cfg.param.basePath
                     gpsInfo = self.gps.getValues()
                     lidarInfo = self.lidar.getPointCloud(data_type='list')
                     savePointCloudTxt(gpsInfo, lidarInfo, path)
+            i += 1
 
 
 BmwX5 = AutoVehicle()
