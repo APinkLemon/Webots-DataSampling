@@ -8,8 +8,11 @@ import open3d as o3d
 import numpy as np
 import glob
 import os
+import random
 import time
+import math
 from config import cfg
+from dataTransform import RemoveGround, rotatePointCloud
 
 
 def storeDataToNumpy(path, render=True):
@@ -54,10 +57,13 @@ def storeDataToPcd(path):
 
 
 def visionPointCloud(pointCloud):
+    axis = o3d.geometry.TriangleMesh.create_coordinate_frame(size=5, origin=[0.0, 0.0, 0.0])
     vis = o3d.visualization.Visualizer()
     vis.create_window()
     vis.add_geometry(pointCloud)
+    vis.add_geometry(axis)
     vis.update_geometry(pointCloud)
+    vis.update_geometry(axis)
     vis.poll_events()
     vis.update_renderer()
     vis.run()
@@ -95,11 +101,33 @@ def pathToPcdPath(path):
         return 9999
 
 
-base = cfg.param.basePath
-fileList = getFilePathList(pathToBasePcdPath(base))
-visionPointCloudPcd(fileList[25])
+def pointCloudToNpy(pointCloud):
+    return np.asarray(pointCloud.points)
 
-# path = pathToPcdPath(base)
-# getFilePathList(path)
-# print(storeDataToPcd(storeDataToNumpy(mypath)))
-# visionPointCloudPcd(mypath)
+
+def npyToPointCloud(npy):
+    pointCloud = o3d.geometry.PointCloud()
+    pointCloud.points = o3d.utility.Vector3dVector(npy)
+    return pointCloud
+
+
+base = cfg.param.basePath
+fileList = getFilePathList(base)
+file = pathToNpyPath(fileList[3])
+a = np.load(file)
+exp = npyToPointCloud(a)
+exp = rotatePointCloud(exp)
+a_1 = pointCloudToNpy(exp)
+b, c = RemoveGround(a_1)
+print(a_1.shape)
+print(b.shape)
+print(c.shape)
+exp2 = npyToPointCloud(c)
+visionPointCloud(exp2)
+# print(a[:, 3])
+
+
+
+# for i in fileList:
+#     print(storeDataToPcd(storeDataToNumpy(i, False)))
+
