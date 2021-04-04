@@ -111,23 +111,23 @@ def npyToPointCloud(npy):
     return pointCloud
 
 
-base = cfg.param.basePath
-fileList = getFilePathList(base)
-file = pathToNpyPath(fileList[3])
-a = np.load(file)
-exp = npyToPointCloud(a)
-exp = rotatePointCloud(exp)
-a_1 = pointCloudToNpy(exp)
-b, c = RemoveGround(a_1)
-print(a_1.shape)
-print(b.shape)
-print(c.shape)
-exp2 = npyToPointCloud(c)
-visionPointCloud(exp2)
-# print(a[:, 3])
-
-
-
-# for i in fileList:
-#     print(storeDataToPcd(storeDataToNumpy(i, False)))
-
+if __name__ == '__main__':
+    base = cfg.param.basePath
+    fileList = getFilePathList(base)
+    file = pathToNpyPath(fileList[9])
+    a = np.load(file)
+    exp = npyToPointCloud(a)
+    exp = rotatePointCloud(exp)
+    a_1 = pointCloudToNpy(exp)
+    b, c = RemoveGround(a_1)
+    print(a_1.shape)
+    print(b.shape)
+    print(c.shape)
+    d = []
+    for i in list(b):
+        if i[2] > -0.5:
+            d.append(i)
+    d = np.array(d)
+    print(d.shape)
+    exp2 = npyToPointCloud(d)
+    visionPointCloud(exp2)

@@ -4,6 +4,7 @@
 日期：2021年03月05日
 """
 
+import sys
 import time
 from controller import Lidar, Keyboard, LidarPoint, GPS
 from vehicle import Car
@@ -67,6 +68,7 @@ class OnHandVehicle(Car):
 class AutoVehicle(Car):
     def __init__(self):
         Car.__init__(self)
+        self.saveStep = 0
         self.steeringAngle = 0.0
         self.velocity = cfg.param.velocity
         self.controlTime = cfg.robot.time
@@ -250,6 +252,9 @@ class AutoVehicle(Car):
                     gpsInfo = self.gps.getValues()
                     lidarInfo = self.lidar.getPointCloud(data_type='list')
                     savePointCloudTxt(gpsInfo, lidarInfo, path)
+                    self.saveStep += 1
+                    if self.saveStep > cfg.param.sampleStep:
+                        sys.exit(997)
             i += 1
 
 
