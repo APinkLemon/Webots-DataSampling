@@ -9,7 +9,7 @@ import pandas as pd
 from dataProcess import getFilePathList
 
 
-pathList = getFilePathList("./dataSet2")
+pathList = getFilePathList("./dataSet3")
 posX = []
 posY = []
 filename = []
@@ -22,11 +22,11 @@ for i in pathList:
         posX.append(single_data[0])
         posY.append(single_data[2])
         break
-dataDict = {"filename": filename, "posX": posX, "posY": posY}
+dataDict = {"timestamp": filename, "northing": posX, "easting": posY}
 data = pd.DataFrame(dataDict)
 print(data)
 data.to_csv(
-    './dataTrain1.csv',
+    './dataEvaluate1.csv',
     index=False,  # 不保存行索引
     header=True,  # 保存列索引
 )
