@@ -7,4 +7,6 @@
 /dataSet3/
 /dataSet4/
 /dataSet5/
+/dataSetNpy5/
 /*.csv
+/GenerateQueries/*.pickle

@@ -34,11 +34,13 @@ def storeDataToNumpy(path, render=True):
     data_numpy = np.array(data)
     savePath = pathToNpyPath(path)
     if os.path.exists(savePath):
-        print(path + " Exists!")
+        if render:
+            print(path + " Exists!")
         return savePath
     np.save(savePath, data_numpy)
-    print(data_numpy.shape)
-    print("Numpy " + savePath + " Successfully Saved!")
+    if render:
+        print(data_numpy.shape)
+        print("Numpy " + savePath + " Successfully Saved!")
     return savePath
 
 
@@ -113,21 +115,7 @@ def npyToPointCloud(npy):
 
 if __name__ == '__main__':
     base = cfg.param.basePath
+    filePath = pathToNpyPath(base)
     fileList = getFilePathList(base)
-    file = pathToNpyPath(fileList[9])
-    a = np.load(file)
-    exp = npyToPointCloud(a)
-    exp = rotatePointCloud(exp)
-    a_1 = pointCloudToNpy(exp)
-    b, c = RemoveGround(a_1)
-    print(a_1.shape)
-    print(b.shape)
-    print(c.shape)
-    d = []
-    for i in list(b):
-        if i[2] > -0.5:
-            d.append(i)
-    d = np.array(d)
-    print(d.shape)
-    exp2 = npyToPointCloud(d)
-    visionPointCloud(exp2)
+    for i in fileList:
+        storeDataToNumpy(i, render=False)

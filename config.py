@@ -10,10 +10,10 @@ __C = edict()
 cfg = __C
 
 __C.param = edict()
-__C.param.savePeriod = 70
-__C.param.basePath = "dataSet4/"
+__C.param.savePeriod = 5
+__C.param.basePath = "dataSet5/"
 __C.param.sample = True
-__C.param.sampleStep = 50
+__C.param.sampleStep = 500
 __C.param.velocity = 50
 
 __C.robot = edict()
