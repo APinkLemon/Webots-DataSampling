@@ -10,6 +10,7 @@ import numpy as np
 import math
 import os
 import random
+from dataProcess import *
 
 
 def RemoveGround(pc, distance_threshold=0.3, sample_size=3, max_iterations=300):  # iteration and time, graph
@@ -114,7 +115,74 @@ def estimate_plane(xyz, normalize=True):
     return np.array([a, b, c, d])
 
 
+def normalizePcd(pointCloud):
+    pcd = pointCloud
+    aabb = pcd.get_axis_aligned_bounding_box()  # o3d.geometry.KDTreeSearchParamHybrid(...)
+    center = aabb.get_center()
+    extent = aabb.get_extent()
+    print(extent)
+    maxExtend = max(extent[0], extent[1], extent[2])
+    pcd = pcd.translate(-center)
+    pcd.scale(1 / maxExtend, center=[0.0, 0.0, 0.0])
+    return pcd
+
+
+def downPcdVoxel(pointCloud, targetNum=4096, render=False):
+    pcd = pointCloud
+    voxel_size = 1
+    shape = np.asarray(pcd.points).shape
+    print(shape)
+    while shape[0] > targetNum:
+        if voxel_size <= 0:
+            print("This is a down voxel fail! ")
+            return 999
+        pcd = o3d.geometry.PointCloud.voxel_down_sample(pcd, voxel_size=voxel_size)
+        shape = np.asarray(pcd.points).shape
+        if voxel_size > 0:
+            voxel_size -= 0.01
+        else:
+            break
+        if render:
+            print(np.asarray(pcd.points).shape)
+    newNp = np.concatenate((np.asarray(pcd.points), np.zeros((targetNum - np.asarray(pcd.points).shape[0], 3))), 0)
+    print(newNp.shape)
+    newPcd = normalizePcd(npyToPointCloud(newNp))
+    return newPcd
+
+
 def rotatePointCloud(pointCloud, xyzRotation=(np.pi / 2, 0, 0), initPoint=(0, 0, 0)):
     mesh = o3d.geometry.TriangleMesh.create_coordinate_frame()
     R = mesh.get_rotation_matrix_from_xyz(xyzRotation)
     return pointCloud.rotate(R, center=initPoint)
+
+
+if __name__ == '__main__':
+    base = "dataSetNpy5"
+    fileList = getFilePathList(base)
+    print(len(fileList))
+    failNum = 0
+    failList = []
+    for i in range(115, len(fileList)):
+        print("#" * 150)
+        print(i)
+        file = fileList[i]
+        print(file)
+        a = np.load(file)
+        exp = npyToPointCloud(a)
+        exp = rotatePointCloud(exp)
+        exp = pointCloudToNpy(exp)
+        b, c = RemoveGround(exp)
+        exp = npyToPointCloud(b)
+        newExp = downPcdVoxel(exp)
+        if newExp == 999:
+            failNum += 1
+            failList.append(i)
+            print(failNum)
+            print(failList)
+            continue
+        exp = pointCloudToNpy(newExp)
+        savePath = "dataTrain2" + fileList[i][11:]
+        print(savePath)
+        np.save(savePath, exp)
+    print(failNum)
+    print(failList)
