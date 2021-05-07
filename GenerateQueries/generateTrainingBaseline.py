@@ -35,7 +35,7 @@ def constructQueryDict(df_centroids, filename):
     ind_r = tree.query_radius(df_centroids[['northing', 'easting']], r=50)
     queries = {}
     for i in range(len(ind_nn)):
-        query = df_centroids.iloc[i]["filename"]
+        query = df_centroids.iloc[i]["timestamp"]
         positives = np.setdiff1d(ind_nn[i], [i]).tolist()
         negatives = np.setdiff1d(df_centroids.index.values.tolist(), ind_r[i]).tolist()
         random.shuffle(positives)
@@ -49,8 +49,8 @@ def constructQueryDict(df_centroids, filename):
     print("Construct Training Baseline Done: " + filename + "!")
 
 
-df_train = pd.DataFrame(columns=['filename', 'posX', 'posY'])
-df_test = pd.DataFrame(columns=['filename', 'posX', 'posY'])
+df_train = pd.DataFrame(columns=['timestamp', 'northing', 'easting'])
+df_test = pd.DataFrame(columns=['timestamp', 'northing', 'easting'])
 df_locations = pd.read_csv("../dataTrain2.csv")
 df_locations['timestamp'] = "dataTrain2/" + df_locations['timestamp'].astype(str) + ".npy"
 
@@ -60,7 +60,7 @@ for index, row in df_locations.iterrows():
     else:
         df_train = df_train.append(row, ignore_index=True)
 
-print("Number of training submaps: " + str(len(df_train['filename'])))
-print("Number of non-disjoint test submaps: " + str(len(df_test['filename'])))
+print("Number of training submaps: " + str(len(df_train['timestamp'])))
+print("Number of non-disjoint test submaps: " + str(len(df_test['timestamp'])))
 constructQueryDict(df_train, "train_queries_baseline.pickle")
 constructQueryDict(df_test, "test_queries_baseline.pickle")

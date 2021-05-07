@@ -11,3 +11,4 @@
 /*.csv
 /GenerateQueries/*.pickle
 /dataTrain2/
+/GenerateQueries/*.npy

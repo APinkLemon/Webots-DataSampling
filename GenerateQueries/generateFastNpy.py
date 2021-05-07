@@ -9,14 +9,14 @@ import sys
 import pickle
 import numpy as np
 
-with open("trainQueriesBaseline.pickle", 'rb') as handle:
+with open("train_queries_baseline.pickle", 'rb') as handle:
     TRAINING_QUERIES = pickle.load(handle)
     print("Queries Loaded.")
 
 print("start load fast")
 DIR = "./"
 TRAINING_POINT_CLOUD = []
-fileName = "TRAINING_POINT_CLOUD_NEW.npy"
+fileName = "TRAINING_POINT_CLOUD_2.npy"
 path = DIR + fileName
 
 if os.path.exists(path):
