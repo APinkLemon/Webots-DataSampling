@@ -30,6 +30,8 @@ def checkInTestSet(x_pos, y_pos, test_points, x_width, y_width):
 
 
 def constructQueryDict(df_centroids, filename):
+    if len(df_centroids) == 0:
+        return
     tree = KDTree(df_centroids[['northing', 'easting']])
     ind_nn = tree.query_radius(df_centroids[['northing', 'easting']], r=10)
     ind_r = tree.query_radius(df_centroids[['northing', 'easting']], r=50)
