@@ -14,12 +14,12 @@ __C.mode = "eval"
 
 __C.param = edict()
 __C.param.savePeriod = 10
-__C.param.basePath = "dataSet9/"
+__C.param.basePath = "dataSet8/"
 __C.param.sample = True
 __C.param.sampleStep = 55
 __C.param.velocity = 50
-__C.param.trainNum = 4
-__C.param.evalNum = 4
+__C.param.trainNum = 3
+__C.param.evalNum = 3
 
 __C.robot = edict()
 __C.robot.time = 50.0

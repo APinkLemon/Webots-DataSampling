@@ -77,8 +77,8 @@ def construct_query_and_database_sets(folders, p, output_name):
                 # indices of the positive matches in database i of each query (key) in test set j
                 test_sets[j][key][i] = index[0].tolist()
 
-    output_to_file(database_sets, output_name + '_evaluation_database.pickle')
-    output_to_file(test_sets, output_name + '_evaluation_query.pickle')
+    output_to_file(database_sets, output_name + '_evaluation_database_' + str(cfg.param.trainNum) + '.pickle')
+    output_to_file(test_sets, output_name + '_evaluation_query_' + str(cfg.param.trainNum) + '.pickle')
 
 
 x_width = 10
@@ -95,6 +95,6 @@ p7 = [93.33673491848327, 95.09738907151828]
 p8 = [67.37772388791976, -44.74183118168341]
 
 p_dict = {"oxford": [p1, p2, p3, p4], "webots": [p5, p6, p7, p8]}
-folders_in = ["../dataEvaluate1.csv", "../dataEvaluate2.csv"]
+folders_in = ["../dataEvaluate3.csv", "../dataEvaluate4.csv"]
 p_webots = p_dict["webots"]
 construct_query_and_database_sets(folders_in, p_webots, "webots")

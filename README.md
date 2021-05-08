@@ -35,5 +35,5 @@ test_queries_baseline_m.pickle
 4. 运行autoVehicle.py采集数据
 5. 运行dataProcess.py将txt转成npy，运行generateTotalCsv生成csv文件
 6. 在config.py中更改evalNum，运行dataTransform.py生成可用的npy文件夹
-7. 运行generateTrainingBaseline.py生成train_queries_baseline_m.pickle和
-test_queries_baseline_m.pickle
+7. 修改选择的csv文件序号，运行generateTest.py生成webots_evaluation_query_m.pickle和
+webots_evaluation_database_m.pickle

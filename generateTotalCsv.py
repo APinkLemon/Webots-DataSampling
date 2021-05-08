@@ -28,7 +28,7 @@ data = pd.DataFrame(dataDict)
 print(data)
 csvPath = './dataTrain' + str(cfg.param.trainNum) + '.csv'
 if cfg.mode == "eval":
-    csvPath = './dataEval' + str(cfg.param.evalNum) + '.csv'
+    csvPath = './dataEvaluate' + str(cfg.param.evalNum) + '.csv'
 data.to_csv(
     csvPath,
     index=False,  # 不保存行索引
