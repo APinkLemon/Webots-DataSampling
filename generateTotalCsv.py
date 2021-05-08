@@ -26,8 +26,11 @@ for i in pathList:
 dataDict = {"timestamp": filename, "northing": posX, "easting": posY}
 data = pd.DataFrame(dataDict)
 print(data)
+csvPath = './dataTrain' + str(cfg.param.trainNum) + '.csv'
+if cfg.mode == "eval":
+    csvPath = './dataEval' + str(cfg.param.evalNum) + '.csv'
 data.to_csv(
-    './dataTrain' + str(cfg.param.trainNum) + '.csv',
+    csvPath,
     index=False,  # 不保存行索引
     header=True,  # 保存列索引
 )

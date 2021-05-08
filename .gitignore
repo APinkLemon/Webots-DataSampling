@@ -25,3 +25,7 @@
 /dataTrain4/
 /dataTrain5/
 /GenerateQueries/*.npy
+/dataEval2/
+/dataEval3/
+/dataEval4/
+/dataEval5/
