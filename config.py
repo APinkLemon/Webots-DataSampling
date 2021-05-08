@@ -11,7 +11,7 @@ cfg = __C
 
 __C.param = edict()
 __C.param.savePeriod = 5
-__C.param.basePath = "dataSet5/"
+__C.param.basePath = "dataSet6/"
 __C.param.sample = True
 __C.param.sampleStep = 500
 __C.param.velocity = 50

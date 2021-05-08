@@ -12,7 +12,6 @@ import random
 import time
 import math
 from config import cfg
-from dataTransform import RemoveGround, rotatePointCloud
 
 
 def storeDataToNumpy(path, render=True):

@@ -253,7 +253,7 @@ class AutoVehicle(Car):
                     lidarInfo = self.lidar.getPointCloud(data_type='list')
                     savePointCloudTxt(gpsInfo, lidarInfo, path)
                     self.saveStep += 1
-                    if self.saveStep > cfg.param.sampleStep:
+                    if self.saveStep >= cfg.param.sampleStep:
                         sys.exit(997)
             i += 1
 

@@ -4,12 +4,6 @@
 日期：2021年03月18日
 """
 
-import open3d as o3d
-import time
-import numpy as np
-import math
-import os
-import random
 from dataProcess import *
 
 
@@ -157,12 +151,12 @@ def rotatePointCloud(pointCloud, xyzRotation=(np.pi / 2, 0, 0), initPoint=(0, 0,
 
 
 if __name__ == '__main__':
-    base = "dataSetNpy5"
+    base = "dataSetNpy6"
     fileList = getFilePathList(base)
     print(len(fileList))
     failNum = 0
     failList = []
-    for i in range(115, len(fileList)):
+    for i in range(0, len(fileList)):
         print("#" * 150)
         print(i)
         file = fileList[i]
@@ -181,7 +175,7 @@ if __name__ == '__main__':
             print(failList)
             continue
         exp = pointCloudToNpy(newExp)
-        savePath = "dataTrain2" + fileList[i][11:]
+        savePath = "dataTrain3" + fileList[i][11:]
         print(savePath)
         np.save(savePath, exp)
     print(failNum)
