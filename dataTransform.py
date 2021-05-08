@@ -151,7 +151,8 @@ def rotatePointCloud(pointCloud, xyzRotation=(np.pi / 2, 0, 0), initPoint=(0, 0,
 
 
 if __name__ == '__main__':
-    base = "dataSetNpy6"
+    base = cfg.param.basePath
+    base = pathToNpyPath(base)
     fileList = getFilePathList(base)
     print(len(fileList))
     failNum = 0
@@ -173,9 +174,11 @@ if __name__ == '__main__':
             failList.append(i)
             print(failNum)
             print(failList)
+            # import sys
+            # sys.exit(999)
             continue
         exp = pointCloudToNpy(newExp)
-        savePath = "dataTrain3" + fileList[i][11:]
+        savePath = "dataTrain" + str(cfg.param.trainNum) + fileList[i][11:]
         print(savePath)
         np.save(savePath, exp)
     print(failNum)

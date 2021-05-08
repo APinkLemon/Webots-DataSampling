@@ -8,15 +8,17 @@ import os
 import sys
 import pickle
 import numpy as np
+from config import cfg
 
-with open("train_queries_baseline.pickle", 'rb') as handle:
+
+with open("train_queries_baseline_" + str(cfg.param.trainNum) + ".pickle", 'rb') as handle:
     TRAINING_QUERIES = pickle.load(handle)
     print("Queries Loaded.")
 
 print("start load fast")
 DIR = "./"
 TRAINING_POINT_CLOUD = []
-fileName = "TRAINING_POINT_CLOUD_2.npy"
+fileName = "TRAINING_POINT_CLOUD_" + str(cfg.param.trainNum) + ".npy"
 path = DIR + fileName
 
 if os.path.exists(path):

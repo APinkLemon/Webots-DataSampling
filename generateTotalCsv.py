@@ -6,10 +6,11 @@
 
 
 import pandas as pd
+from config import cfg
 from dataProcess import getFilePathList
 
 
-pathList = getFilePathList("./dataSet5")
+pathList = getFilePathList(cfg.param.basePath)
 posX = []
 posY = []
 filename = []
@@ -26,7 +27,7 @@ dataDict = {"timestamp": filename, "northing": posX, "easting": posY}
 data = pd.DataFrame(dataDict)
 print(data)
 data.to_csv(
-    './dataTrain2.csv',
+    './dataTrain' + str(cfg.param.trainNum) + '.csv',
     index=False,  # 不保存行索引
     header=True,  # 保存列索引
 )

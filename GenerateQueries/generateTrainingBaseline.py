@@ -51,8 +51,8 @@ def constructQueryDict(df_centroids, filename):
 
 df_train = pd.DataFrame(columns=['timestamp', 'northing', 'easting'])
 df_test = pd.DataFrame(columns=['timestamp', 'northing', 'easting'])
-df_locations = pd.read_csv("../dataTrain2.csv")
-df_locations['timestamp'] = "dataTrain2/" + df_locations['timestamp'].astype(str) + ".npy"
+df_locations = pd.read_csv("../dataTrain" + str(cfg.param.trainNum) + ".csv")
+df_locations['timestamp'] = "dataTrain" + str(cfg.param.trainNum) + "/" + df_locations['timestamp'].astype(str) + ".npy"
 
 for index, row in df_locations.iterrows():
     if checkInTestSet(row['northing'], row['easting'], p, deltaX, deltaY):
@@ -62,5 +62,5 @@ for index, row in df_locations.iterrows():
 
 print("Number of training submaps: " + str(len(df_train['timestamp'])))
 print("Number of non-disjoint test submaps: " + str(len(df_test['timestamp'])))
-constructQueryDict(df_train, "train_queries_baseline.pickle")
-constructQueryDict(df_test, "test_queries_baseline.pickle")
+constructQueryDict(df_train, "train_queries_baseline_" + str(cfg.param.trainNum) + ".pickle")
+constructQueryDict(df_test, "test_queries_baseline_" + str(cfg.param.trainNum) + ".pickle")
