@@ -180,7 +180,7 @@ if __name__ == '__main__':
         exp = pointCloudToNpy(newExp)
         savePath = "dataTrain" + str(cfg.param.trainNum) + fileList[i][11:]
         if cfg.mode == "eval":
-            savePath = "dataEval" + str(cfg.param.evalNum) + fileList[i][11:]
+            savePath = "dataEvaluate" + str(cfg.param.evalNum) + fileList[i][11:]
         print(savePath)
         np.save(savePath, exp)
     print(failNum)
