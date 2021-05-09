@@ -77,12 +77,22 @@ def construct_query_and_database_sets(folders, p, output_name):
                 # indices of the positive matches in database i of each query (key) in test set j
                 test_sets[j][key][i] = index[0].tolist()
 
-    output_to_file(database_sets, output_name + '_evaluation_database_' + str(cfg.param.trainNum) + '.pickle')
-    output_to_file(test_sets, output_name + '_evaluation_query_' + str(cfg.param.trainNum) + '.pickle')
+    print("length of database0: ", len(database_sets[0]))
+    print("length of test0: ", len(test_sets[0]))
+
+    print("length of database1: ", len(database_sets[1]))
+    print("length of test1: ", len(test_sets[1]))
+
+    print(database_sets[0][1])
+    print(test_sets[0][1])
+    print(test_sets[1][1])
+
+    output_to_file(database_sets, output_name + '_evaluation_database_' + str(cfg.param.trainNum) + '_Total.pickle')
+    output_to_file(test_sets, output_name + '_evaluation_query_' + str(cfg.param.trainNum) + '_Total.pickle')
 
 
-x_width = 10
-y_width = 10
+x_width = 100
+y_width = 100
 
 p1 = [5735712.768124, 620084.402381]
 p2 = [5735611.299219, 620540.270327]
@@ -95,6 +105,6 @@ p7 = [93.33673491848327, 95.09738907151828]
 p8 = [67.37772388791976, -44.74183118168341]
 
 p_dict = {"oxford": [p1, p2, p3, p4], "webots": [p5, p6, p7, p8]}
-folders_in = ["../dataEvaluate3.csv", "../dataEvaluate4.csv"]
+folders_in = ["../dataEvaluate4.csv", "../dataTrain3.csv"]
 p_webots = p_dict["webots"]
 construct_query_and_database_sets(folders_in, p_webots, "webots")
